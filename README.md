@@ -9,7 +9,7 @@ This project has been completed to help further develop skills associated with S
 - logging in will retain the users previous reservations
 - listings can be searched for in the database based on certain criteria
 
-## Project Structure
+## LightBnB ERD Diagram
 !["LightBnB ERD Diagram"](https://github.com/Jagan-creator/LightBnB/blob/main/docs/LightBnB_ERD.png)
 
 ## Getting Started
