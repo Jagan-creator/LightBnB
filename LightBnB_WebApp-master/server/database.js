@@ -89,7 +89,6 @@ const getAllReservations = function(guest_id, limit = 10) {
     .query(`
     SELECT reservations.*, properties.*, AVG(rating) AS average_rating
     FROM reservations
-    JOIN users ON users.id = guest_id
     JOIN properties ON reservations.property_id = properties.id
     JOIN property_reviews ON properties.id = property_reviews.property_id 
     WHERE users.id = $1 AND end_date < now()::date
