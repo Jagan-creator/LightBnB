@@ -116,7 +116,7 @@ const getAllProperties = function(options, limit = 10) {
   let queryParams = [];
 
   let queryString = `
-  SELECT properties.*, AVG(rating) as average_rating
+  SELECT properties.*, AVG(property_reviews.rating) as average_rating
   FROM properties
   JOIN property_reviews ON properties.id = property_id
   `;
@@ -165,11 +165,13 @@ const getAllProperties = function(options, limit = 10) {
   queryParams.push(limit);
   queryString += `
   GROUP BY properties.id
+  HAVING AVG(property_reviews.rating) >= 4
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
 
-  console.log(queryString, queryParams);
+  console.log(options.minimum_rating);
+  // console.log(queryString, queryParams);
 
   return pool.query(queryString, queryParams)
     .then(result => result.rows)
