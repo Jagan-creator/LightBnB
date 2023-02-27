@@ -170,8 +170,7 @@ const getAllProperties = function(options, limit = 10) {
   LIMIT $${queryParams.length};
   `;
 
-  console.log(options.minimum_rating);
-  // console.log(queryString, queryParams);
+  console.log(queryString, queryParams);
 
   return pool.query(queryString, queryParams)
     .then(result => result.rows)
