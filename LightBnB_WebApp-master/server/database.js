@@ -91,7 +91,7 @@ const getAllReservations = function(guest_id, limit = 10) {
     FROM reservations
     JOIN properties ON reservations.property_id = properties.id
     JOIN property_reviews ON properties.id = property_reviews.property_id 
-    WHERE users.id = $1 AND end_date < now()::date
+    WHERE reservations.guest_id = $1 AND end_date < now()::date
     GROUP BY properties.id, reservations.id
     ORDER BY start_date DESC
     LIMIT $2
@@ -129,8 +129,6 @@ const getAllProperties = function(options, limit = 10) {
   if (options.owner_id) {
     queryParams.push(options.owner_id);
       if (queryParams.length >= 2) {
-        queryString += `WHERE owner_id = $${queryParams.length}`;
-    } else {
         queryString += `AND owner_id = $${queryParams.length}`;
     }
   }
@@ -138,28 +136,24 @@ const getAllProperties = function(options, limit = 10) {
   if (options.minimum_rating) {
     queryParams.push(options.minimum_rating);
       if (queryParams.length >= 2) {
-        queryString += `WHERE rating > $${queryParams.length}`;
-      } else {
         queryString += `AND rating > $${queryParams.length}`;
       }
   }
 
-  if (options.minimum_price_per_night * 100) {
-    queryParams.push(options.minimum_price_per_night * 100);
-      if (queryParams.length >= 2) {
-        queryString += `WHERE cost_per_night > $${queryParams.length}`;
-      } else {
-        queryString += `AND cost_per_night > $${queryParams.length}`;
-      }
+  if (options.minimum_price_per_night) {
+    queryParams.push(options.minimum_price_per_night * 100)
+  } else {
+    queryParams.push(0);
   }
 
-  if (options.maximum_price_per_night * 100) {
+  queryString += `AND cost_per_night >= $${queryParams.length} `
+  
+  if (options.maximum_price_per_night) {
+    if (queryParams.length >= 2) {
+      queryString += 'AND ';
+    }
     queryParams.push(options.maximum_price_per_night * 100);
-      if (queryParams.length >= 2) {
-        queryString += `WHERE cost_per_night < $${queryParams.length}`;
-      } else {
-        queryString += `AND cost_per_night < $${queryParams.length}`;
-      }
+    queryString += `cost_per_night <= $${queryParams.length} `;
   }
 
   queryParams.push(limit);
