@@ -132,15 +132,6 @@ const getAllProperties = function(options, limit = 10) {
     }
   }
 
-  if (options.minimum_rating) {
-    queryParams.push(options.minimum_rating);
-      if (queryParams.length >= 2) {
-        queryString += `AND rating > $${queryParams.length} `;
-      } else {
-        queryString += `WHERE rating > $${queryParams.length} `;
-    }
-  }
-
   // minimum price per night is multiplied by 100 to convert for database
   if (options.minimum_price_per_night) {
     queryParams.push(options.minimum_price_per_night * 100);
@@ -192,7 +183,14 @@ const addProperty = function(property) {
   let queryParams = [];
 
   for (let key in property) {
-    queryParams.push(property[key]);
+    if (key === "cost_per_night") {
+      const costPerNightConversion = Number(property[key]) * 100;
+      const costPerNightInString = String(costPerNightConversion);
+      
+      queryParams.push(costPerNightInString);
+    } else {
+      queryParams.push(property[key]);
+    }
   }
 
   return pool
